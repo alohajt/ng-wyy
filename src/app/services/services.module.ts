@@ -1,13 +1,14 @@
-import { NgModule } from '@angular/core';
-import { PagesModule } from '../pages/pages.module';
+import { NgModule, InjectionToken } from '@angular/core';
 
-
+export const API_CONFIG = new InjectionToken('ApiConfigToken');
 
 @NgModule({
   declarations: [],
   imports: [
-    PagesModule,
     
+  ],
+  providers: [
+    { provide: API_CONFIG, useValue: 'http://localhost:3000/' }
   ]
 })
 export class ServicesModule { }
