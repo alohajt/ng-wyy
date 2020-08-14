@@ -1,4 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Store, select } from '@ngrx/store';
+import { AppStoreModule } from '../../../store/index';
+import { getSongList, getPlayList, getCurrentIndex, getPlayMode, getCurrentSong, getPlayer } from '../../../store/selectors/player.selector';
+import { Song } from '../../../services/data-types/common.types';
+import { PlayMode } from './player-type';
 
 @Component({
   selector: 'app-wy-player',
@@ -6,12 +11,59 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./wy-player.component.less']
 })
 export class WyPlayerComponent implements OnInit {
+  
   sliderValue = 35;
   bufferOffset = 70;
 
-  constructor() { }
+  songList: Song[];
+  playList: Song[];
+  currentIndex: number;
+  currentSong: Song;
 
-  ngOnInit(): void {
+  @ViewChild('audio', { static: true }) private audio: ElementRef;
+  private audioEl: HTMLAudioElement;
+
+
+  constructor(
+    private store$: Store<AppStoreModule>
+  ) {
+    const appStore$ = this.store$.pipe(select(getPlayer));
+    appStore$.pipe(select(getSongList)).subscribe(list => this.watchList(list, 'songList'));
+    appStore$.pipe(select(getPlayList)).subscribe(list => this.watchList(list, 'playList'));
+    appStore$.pipe(select(getCurrentIndex)).subscribe(index => this.watchCurrentIndex(index));
+    appStore$.pipe(select(getPlayMode)).subscribe(mode => this.watchPlayMode(mode));
+    appStore$.pipe(select(getCurrentSong)).subscribe(song => this.watchCurrentSong(song));
   }
 
+  ngOnInit() {
+    this.audioEl = this.audio.nativeElement;
+  }
+
+
+
+  private watchList(list: Song[], type: string) {
+    this[type] = list;
+  }
+
+  private watchCurrentIndex(index: number) {
+    this.currentIndex = index;
+  }
+
+  private watchPlayMode(mode: PlayMode) {
+    console.log('mode :', mode);
+  }
+
+  private watchCurrentSong(song: Song) {
+    this.currentSong = song;
+    console.log('song :', song);
+  }
+
+
+  onCanplay() {
+    this.play();
+  }
+
+  private play() {
+    this.audioEl.play();
+  }
 }
