@@ -1,12 +1,12 @@
 import { Observable } from 'rxjs';
 
 export type WySliderStyle = {
-    width?: string | null;
-    height?: string | null;
-    left?: string | null;
-    bottom?: string | null;
+  width?: string | null;
+  height?: string | null;
+  left?: string | null;
+  bottom?: string | null;
 }
-  
+
 export type SliderEventObserverConfig = {
   start: string;
   move: string;
@@ -17,3 +17,5 @@ export type SliderEventObserverConfig = {
   moveResolved$?: Observable<number>;
   end$?: Observable<Event>;
 }
+
+export type SliderValue = number | null;
