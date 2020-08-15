@@ -1,10 +1,12 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, Inject } from '@angular/core';
 import { Store, select } from '@ngrx/store';
 import { AppStoreModule } from '../../../store/index';
 import { getSongList, getPlayList, getCurrentIndex, getPlayMode, getCurrentSong, getPlayer } from '../../../store/selectors/player.selector';
 import { Song } from '../../../services/data-types/common.types';
 import { PlayMode } from './player-type';
 import { SetCurrentIndex } from 'src/app/store/actions/player.actions';
+import { Subscription, fromEvent } from 'rxjs';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'app-wy-player',
@@ -24,18 +26,31 @@ export class WyPlayerComponent implements OnInit {
   duration: number;
   currentTime: number;
 
-  // 播放状态
+  // 播放状态 playing status
   playing = false;
 
-  // 是否可以播放
+  // 是否可以播放 play or not
   songReady = false;
+
+  // 音量 volume
+  volume = 60;
+
+  // 是否显示音量面板 if show volume panel 
+  showVolumnPanel = false;
+
+  // 是否点击的是音量面板本身 if click on volume panel
+  selfClick = false;
+
+  private winClick: Subscription;
+
 
   @ViewChild('audio', { static: true }) private audio: ElementRef;
   private audioEl: HTMLAudioElement;
 
 
   constructor(
-    private store$: Store<AppStoreModule>
+    private store$: Store<AppStoreModule>,
+    @Inject(DOCUMENT) private doc: Document
   ) {
     const appStore$ = this.store$.pipe(select(getPlayer));
     appStore$.pipe(select(getSongList)).subscribe(list => this.watchList(list, 'songList'));
@@ -71,9 +86,52 @@ export class WyPlayerComponent implements OnInit {
     }
   }
 
-  onPercentChange(per) {
-    this.audioEl.currentTime = this.duration * (per / 100);
+  onPercentChange(per: number) {
+    if (this.currentSong) {
+      this.audioEl.currentTime = this.duration * (per / 100);
+    }
   }
+
+  // 控制音量 control volume
+  onVolumeChange(per: number) {
+    this.audioEl.volume = per / 100;
+  }
+
+  // 控制音量面板 control volume panel
+  toggleVolPanel(evt: MouseEvent) {
+    // evt.stopPropagation();
+    this.togglePanel();
+  }
+
+  togglePanel() {
+    this.showVolumnPanel = !this.showVolumnPanel;
+    if (this.showVolumnPanel) {
+      this.bindDocumentClickListener();
+    } else {
+      this.unbindDocumentClickListener();
+    }
+  }
+
+  private bindDocumentClickListener() {
+    if (!this.winClick) {
+      this.winClick = fromEvent(this.doc, 'click').subscribe(() => {
+        if (!this.selfClick) {  // 说明点击了播放器以外的部分 click outside of player panel
+          this.showVolumnPanel = false;
+          this.unbindDocumentClickListener();
+        }
+        this.selfClick = false;
+      });
+    }
+  }
+
+
+  private unbindDocumentClickListener() {
+    if (this.winClick) {
+      this.winClick.unsubscribe();
+      this.winClick = null;
+    }
+  }
+
 
   // 播放/暂停 play/pause
   onToggle() {
@@ -98,7 +156,7 @@ export class WyPlayerComponent implements OnInit {
     if (!this.songReady) return;
     if (this.playList.length === 1) {
       this.loop();
-    }else {
+    } else {
       const newIndex = index <= 0 ? this.playList.length - 1 : index;
       this.updateIndex(newIndex);
     }
@@ -110,23 +168,23 @@ export class WyPlayerComponent implements OnInit {
     if (!this.songReady) return;
     if (this.playList.length === 1) {
       this.loop();
-    }else {
+    } else {
       const newIndex = index >= this.playList.length ? 0 : index;
       this.updateIndex(newIndex);
     }
   }
 
-    // 单曲循环 repeat a song
-    private loop() {
-      this.audioEl.currentTime = 0;
-      this.play();
-    }
-  
-  
-    private updateIndex(index: number) {
-      this.store$.dispatch(SetCurrentIndex({ currentIndex: index }));
-      this.songReady = false;
-    }
+  // 单曲循环 repeat a song
+  private loop() {
+    this.audioEl.currentTime = 0;
+    this.play();
+  }
+
+
+  private updateIndex(index: number) {
+    this.store$.dispatch(SetCurrentIndex({ currentIndex: index }));
+    this.songReady = false;
+  }
 
   onCanplay() {
     this.songReady = true;
