@@ -19,7 +19,7 @@ const modeTypes: PlayMode[] = [{
 }, {
   type: 'singleLoop',
   label: '单曲循环'
-  }];
+}];
 
 @Component({
   selector: 'app-wy-player',
@@ -51,13 +51,16 @@ export class WyPlayerComponent implements OnInit {
   // 是否显示音量面板 if show volume panel 
   showVolumnPanel = false;
 
+  // 是否显示列表面板 if show play list panel
+  showPanel = false;
+
   // 是否点击的是音量面板本身 if click on volume panel
   selfClick = false;
 
-    // 当前模式
-    currentMode: PlayMode;
+  // 当前模式
+  currentMode: PlayMode;
   modeCount = 0;
-  
+
 
   private winClick: Subscription;
 
@@ -137,12 +140,19 @@ export class WyPlayerComponent implements OnInit {
   // 控制音量面板 control volume panel
   toggleVolPanel(evt: MouseEvent) {
     // evt.stopPropagation();
-    this.togglePanel();
+    this.togglePanel('showVolumnPanel');
   }
 
-  togglePanel() {
-    this.showVolumnPanel = !this.showVolumnPanel;
-    if (this.showVolumnPanel) {
+  // 控制列表面板
+  toggleListPanel() {
+    if (this.songList.length) {
+      this.togglePanel('showPanel');
+    }
+  }
+
+  togglePanel(type: string) {
+    this[type] = !this[type];
+    if (this.showVolumnPanel || this.showPanel) {
       this.bindDocumentClickListener();
     } else {
       this.unbindDocumentClickListener();
@@ -154,6 +164,7 @@ export class WyPlayerComponent implements OnInit {
       this.winClick = fromEvent(this.doc, 'click').subscribe(() => {
         if (!this.selfClick) {  // 说明点击了播放器以外的部分 click outside of player panel
           this.showVolumnPanel = false;
+          this.showPanel = false;
           this.unbindDocumentClickListener();
         }
         this.selfClick = false;
@@ -211,16 +222,16 @@ export class WyPlayerComponent implements OnInit {
     }
   }
 
-   // 播放结束
-   onEnded() {
+  // 播放结束
+  onEnded() {
     this.playing = false;
     if (this.currentMode.type === 'singleLoop') {
       this.loop();
-    }else {
+    } else {
       this.onNext(this.currentIndex + 1);
     }
-   }
-  
+  }
+
   // 单曲循环 repeat a song
   private loop() {
     this.audioEl.currentTime = 0;
@@ -254,5 +265,9 @@ export class WyPlayerComponent implements OnInit {
 
   get picUrl(): string {
     return this.currentSong ? this.currentSong.al.picUrl : '//s4.music.126.net/style/web2/img/default/default_album.jpg';
+  }
+  // 改变歌曲
+  onChangeSong(song: Song) {
+    this.updateCurrentIndex(this.playList, song);
   }
 }
