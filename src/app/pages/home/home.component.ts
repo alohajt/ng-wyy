@@ -45,12 +45,15 @@ export class HomeComponent implements OnInit {
   onChangeSlide(type: 'pre' | 'next') {
     this.nzCarousel[type]();
   }
+
+
   onPlaySheet(id: number) {
     console.log('id :', id);
     this.sheetServe.playSheet(id).subscribe(list => {
-      this.store$.dispatch(SetSongList({ songList: list}));
-      this.store$.dispatch(SetPlayList({ playList: list}));
+      this.store$.dispatch(SetSongList({ songList: list }));
+      this.store$.dispatch(SetPlayList({ playList: list }));
       this.store$.dispatch(SetCurrentIndex({ currentIndex: 0 }));
     });
   }
+
 }

@@ -1,6 +1,10 @@
 <div class="home">
   <app-wy-carousel #wyCarousel [activeIndex]="carouselActiveIndex" (changeSlide)="onChangeSlide($event)">
-    <nz-carousel nzAutoPlay nzEffect="fade" [nzDotRender]="wyCarousel.dotRef" (nzBeforeChange)="onBeforeChange($event)">
+    <nz-carousel
+    nzAutoPlay
+    nzEffect="fade"
+    [nzDotRender]="wyCarousel.dotRef"
+    (nzBeforeChange)="onBeforeChange($event)">
       <div class="carousel-item" nz-carousel-content *ngFor="let item of banners">
         <a [href]="item.url" target="_blank" class="banner-item">
           <img [src]="item.imageUrl" />
@@ -32,11 +36,11 @@
 
           <div class="down">
             <div class="down-wrap">
-              <app-single-sheet 
-              class="sheet-item" 
-              *ngFor="let item of songSheetList" 
-              [sheet]="item"
-              (onPlay)="onPlaySheet($event)"
+              <app-single-sheet
+                class="sheet-item"
+                *ngFor="let item of songSheetList"
+                [sheet]="item"
+                (onPlay)="onPlaySheet($event)"
               >
               </app-single-sheet>
             </div>

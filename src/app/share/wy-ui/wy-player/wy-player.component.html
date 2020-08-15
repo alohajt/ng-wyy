@@ -1,56 +1,57 @@
 <div class="m-player"
-(click)="selfClick = true"
+  (click)="selfClick = true"
 >
-    <div class="lock">
-      <div class="left"><i></i></div>
-    </div>
-    <div class="hand"></div>
-    <div class="container">
-      <div class="wrap">
-        <div class="btns">
-          <i class="prev" (click)="onPrev(currentIndex - 1)"></i>
-          <i class="toggle" [class.playing]="playing" (click)="onToggle()"></i>
-          <i class="next" (click)="onNext(currentIndex + 1)"></i>
+  <div class="lock">
+    <div class="left"><i></i></div>
+  </div>
+  <div class="hand"></div>
+  <div class="container">
+    <div class="wrap">
+      <div class="btns">
+        <i class="prev" (click)="onPrev(currentIndex - 1)"></i>
+        <i class="toggle" [class.playing]="playing" (click)="onToggle()"></i>
+        <i class="next" (click)="onNext(currentIndex + 1)"></i>
+      </div>
+      <div class="head">
+        <img [src]="picUrl" />
+        <i class="mask"></i>
+      </div>
+      <div class="play">
+        <div class="words clearfix">
+          <p class="ellipsis margin-bottom-none">{{currentSong?.name}}</p>
+          <ul class="songs clearfix margin-bottom-none">
+            <li *ngFor="let item of currentSong?.ar; last as isLast">
+              <a>{{item.name}}</a>
+              <span [hidden]="isLast">/</span>
+            </li>
+          </ul>
         </div>
-        <div class="head">
-          <img [src]="picUrl" />
-          <i class="mask"></i>
-        </div>
-        <div class="play">
-          <div class="words clearfix">
-            <p class="ellipsis margin-bottom-none">{{currentSong?.name}}</p>
-            <ul class="songs clearfix margin-bottom-none">
-              <li *ngFor="let item of currentSong?.ar; last as isLast">
-                <a>{{item.name}}</a>
-                <span [hidden]="isLast">/</span>
-              </li>
-            </ul>
+        <div class="bar">
+          <div class="slider-wrap">
+            <app-wy-slider [bufferOffset]="bufferPercent" [(ngModel)]="percent" (wyOnAfterChange)="onPercentChange($event)"></app-wy-slider>
           </div>
-          <div class="bar">
-            <div class="slider-wrap">
-              <app-wy-slider [bufferOffset]="bufferPercent" [(ngModel)]="percent" (wyOnAfterChange)="onPercentChange($event)"></app-wy-slider>
-            </div>
-            <span class="time">
-              <em>{{currentTime | formatTime}}</em> / {{duration | formatTime}}
-            </span>
-          </div>
+          <span class="time">
+            <em>{{currentTime | formatTime}}</em> / {{duration | formatTime}}
+          </span>
         </div>
-  
-        <div class="oper">
-          <i class="like" title="收藏"></i>
-          <i class="share" title="分享"></i>
+      </div>
+
+      <div class="oper">
+        <i class="like" title="收藏"></i>
+        <i class="share" title="分享"></i>
+      </div>
+      <div class="ctrl">
+        <i class="volume" title="音量" (click)="toggleVolPanel($event)"></i>
+        <i [ngClass]="currentMode.type" [title]="currentMode.label" (click)="changeMode()"></i>
+        <p class="open" (click)="toggleListPanel()">
+          <span></span>
+        </p>
+
+        <div class="control-vol" [hidden]="!showVolumnPanel">
+          <app-wy-slider [wyVertical]="true" [(ngModel)]="volume" (ngModelChange)="onVolumeChange($event)"></app-wy-slider>
         </div>
-        <div class="ctrl">
-          <i class="volume" title="音量"  (click)="toggleVolPanel($event)"></i>
-          <i [ngClass]="currentMode.type" [title]="currentMode.label" (click)="changeMode()"></i>
-          <p class="open" (click)="toggleListPanel()">
-            <span></span>
-          </p>
-          <div class="control-vol" [hidden]="!showVolumnPanel">
-            <app-wy-slider [wyVertical]="true" [(ngModel)]="volume" (ngModelChange)="onVolumeChange($event)"></app-wy-slider>
-          </div>
-        </div>
-        <app-wy-player-panel
+      </div>
+      <app-wy-player-panel
         [songList]="songList"
         [currentSong]="currentSong"
         [currentIndex]="currentIndex"
@@ -59,13 +60,17 @@
         (onClose)="showPanel = false"
       >
       </app-wy-player-panel>
-      </div>
     </div>
-    <audio 
-    #audio 
-    [src]="currentSong?.url" 
+  </div>
+
+
+
+  <audio
+    #audio
+    [src]="currentSong?.url"
     (canplay)="onCanplay()"
     (timeupdate)="onTimeUpdate($event)"
     (ended)="onEnded()"
-    ></audio>
-  </div>
+  >
+  </audio>
+</div>

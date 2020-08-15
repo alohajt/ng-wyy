@@ -4,7 +4,6 @@ import { Pipe, PipeTransform } from '@angular/core';
   name: 'formatTime'
 })
 export class FormatTimePipe implements PipeTransform {
-
   transform(time: number): any {
     if (time) {
       const temp = time | 0;
@@ -15,6 +14,5 @@ export class FormatTimePipe implements PipeTransform {
       return '00:00';
     }
   }
-
 
 }

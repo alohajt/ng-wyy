@@ -24,7 +24,7 @@ export class WySliderComponent implements OnInit, OnDestroy, ControlValueAccesso
   @Input() wyVertical = false;
   @Input() wyMin = 0;
   @Input() wyMax = 100;
-  @Input() bufferOffset: SliderValue= 0;
+  @Input() bufferOffset: SliderValue = 0;
 
   @Output() wyOnAfterChange = new EventEmitter<SliderValue>();
 
@@ -37,7 +37,6 @@ export class WySliderComponent implements OnInit, OnDestroy, ControlValueAccesso
   private dragStart_: Subscription | null;
   private dragMove_: Subscription | null;
   private dragEnd_: Subscription | null;
-
 
   private isDragging = false;
 
@@ -76,12 +75,12 @@ export class WySliderComponent implements OnInit, OnDestroy, ControlValueAccesso
       const { start, move, end, filter: filerFunc, pluckKey } = source;
 
       source.startPlucked$ = fromEvent(this.sliderDom, start)
-        .pipe(
-          filter(filerFunc),
-          tap(sliderEvent),
-          pluck(...pluckKey),
-          map((position: number) => this.findClosestValue(position))
-        );
+      .pipe(
+        filter(filerFunc),
+        tap(sliderEvent),
+        pluck(...pluckKey),
+        map((position: number) => this.findClosestValue(position))
+      );
 
       source.end$ = fromEvent(this.doc, end);
       source.moveResolved$ = fromEvent(this.doc, move).pipe(
@@ -99,17 +98,19 @@ export class WySliderComponent implements OnInit, OnDestroy, ControlValueAccesso
     this.dragEnd$ = merge(mouse.end$, touch.end$);
   }
 
+
   private subscribeDrag(events: string[] = ['start', 'move', 'end']) {
-    if (inArray(events, 'start') && this.dragStart$) {
-      this.dragStart$.subscribe(this.onDragStart.bind(this));
+    if (inArray(events, 'start') && this.dragStart$ && !this.dragStart_) {
+      this.dragStart_ = this.dragStart$.subscribe(this.onDragStart.bind(this));
     }
-    if (inArray(events, 'move') && this.dragMove$) {
-      this.dragMove$.subscribe(this.onDragMove.bind(this));
+    if (inArray(events, 'move') && this.dragMove$ && !this.dragMove_) {
+      this.dragMove_ = this.dragMove$.subscribe(this.onDragMove.bind(this));
     }
-    if (inArray(events, 'end') && this.dragEnd$) {
-      this.dragEnd$.subscribe(this.onDragEnd.bind(this));
+    if (inArray(events, 'end') && this.dragEnd$ && !this.dragEnd_) {
+      this.dragEnd_ = this.dragEnd$.subscribe(this.onDragEnd.bind(this));
     }
   }
+
 
   private unsubscribeDrag(events: string[] = ['start', 'move', 'end']) {
     if (inArray(events, 'start') && this.dragStart_) {
@@ -129,6 +130,7 @@ export class WySliderComponent implements OnInit, OnDestroy, ControlValueAccesso
   private onDragStart(value: number) {
     this.toggleDragMoving(true);
     this.setValue(value);
+
   }
   private onDragMove(value: number) {
     if (this.isDragging) {
@@ -141,6 +143,8 @@ export class WySliderComponent implements OnInit, OnDestroy, ControlValueAccesso
     this.toggleDragMoving(false);
     this.cdr.markForCheck();
   }
+
+
   private setValue(value: SliderValue, needCheck = false) {
     if (needCheck) {
       if (this.isDragging) return;
@@ -151,18 +155,20 @@ export class WySliderComponent implements OnInit, OnDestroy, ControlValueAccesso
       this.updateTrackAndHandles();
       this.onValueChange(this.value);
     }
-
+    
   }
+
 
   private formatValue(value: SliderValue): SliderValue {
     let res = value;
     if (this.assertValueValid(value)) {
       res = this.wyMin;
-    } else {
+    }else {
       res = limitNumberInRange(value, this.wyMin, this.wyMax);
     }
     return res;
   }
+
 
   // 判断是否是NAN
   private assertValueValid(value: SliderValue): boolean {
@@ -191,10 +197,11 @@ export class WySliderComponent implements OnInit, OnDestroy, ControlValueAccesso
     this.isDragging = movable;
     if (movable) {
       this.subscribeDrag(['move', 'end']);
-    } else {
+    }else {
       this.unsubscribeDrag(['move', 'end']);
     }
   }
+
 
   private findClosestValue(position: number): number {
     // 获取滑块总长
@@ -218,8 +225,10 @@ export class WySliderComponent implements OnInit, OnDestroy, ControlValueAccesso
     const offset = getElementOffset(this.sliderDom);
     return this.wyVertical ? offset.top : offset.left;
   }
-  private onValueChange(value: SliderValue): void { };
-  private onTouched(): void { };
+
+
+  private onValueChange(value: SliderValue): void {};
+  private onTouched(): void {};
 
   writeValue(value: SliderValue): void {
     this.setValue(value, true);
@@ -233,6 +242,7 @@ export class WySliderComponent implements OnInit, OnDestroy, ControlValueAccesso
   registerOnTouched(fn: () => void): void {
     this.onTouched = fn;
   }
+
 
   ngOnDestroy(): void {
     this.unsubscribeDrag();

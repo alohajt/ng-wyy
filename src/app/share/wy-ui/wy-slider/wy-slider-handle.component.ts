@@ -6,15 +6,14 @@ import { WySliderStyle } from './wy-slider-types';
   template: `<div class="wy-slider-handle" [ngStyle]="style"></div>`,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-
-export class WySliderHandleComponent implements OnInit {
+export class WySliderHandleComponent implements OnInit, OnChanges {
   @Input() wyVertical = false;
   @Input() wyOffset: number;
 
   style: WySliderStyle = {};
   constructor() { }
 
-  ngOnInit(): void {
+  ngOnInit() {
   }
 
   ngOnChanges(changes: SimpleChanges): void {

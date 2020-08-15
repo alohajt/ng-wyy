@@ -3,6 +3,7 @@ export function sliderEvent(e: Event) {
   e.preventDefault();
 }
 
+
 export function getElementOffset(el: HTMLElement): { top: number; left: number; } {
   if (!el.getClientRects().length) {
     return {
@@ -19,3 +20,4 @@ export function getElementOffset(el: HTMLElement): { top: number; left: number; 
     left: rect.left + win.pageXOffset
   }
 }
+

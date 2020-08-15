@@ -19,9 +19,6 @@
         "@schematics/angular:guard": {
           "skipTests": true
         },
-        "@schematics/angular:interceptor": {
-          "skipTests": true
-        },
         "@schematics/angular:module": {
           "skipTests": true
         },
@@ -44,7 +41,7 @@
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
-            "aot": true,
+            "aot": false,
             "assets": [
               "src/favicon.ico",
               "src/assets",
@@ -72,6 +69,7 @@
               "sourceMap": false,
               "extractCss": true,
               "namedChunks": false,
+              "aot": true,
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true,

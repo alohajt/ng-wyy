@@ -4,12 +4,13 @@ import { Observable } from 'rxjs';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { map } from 'rxjs/internal/operators';
 import { Singer } from './data-types/common.types';
-import queryString from 'query-string'
+import queryString from 'query-string';
+
 
 type SingerParams = {
   offset: number;
   limit: number;
-  cat?:string
+  cat?: string;
 }
 
 const defaultParams: SingerParams = {
@@ -26,9 +27,8 @@ export class SingerService {
   constructor(private http: HttpClient, @Inject(API_CONFIG) private uri: string) { }
 
   getEnterSinger(args: SingerParams = defaultParams): Observable<Singer[]> {
-    const params = new HttpParams({ fromString: queryString.stringify(args) })
-    return this.http.get(this.uri + 'artist/list', {params})
+    const params = new HttpParams({ fromString: queryString.stringify(args) });
+    return this.http.get(this.uri + 'artist/list', { params })
     .pipe(map((res: { artists: Singer[] }) => res.artists));
   }
-
 }

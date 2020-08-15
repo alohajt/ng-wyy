@@ -7,6 +7,7 @@ export type WySliderStyle = {
   bottom?: string | null;
 }
 
+
 export type SliderEventObserverConfig = {
   start: string;
   move: string;
@@ -17,5 +18,6 @@ export type SliderEventObserverConfig = {
   moveResolved$?: Observable<number>;
   end$?: Observable<Event>;
 }
+
 
 export type SliderValue = number | null;

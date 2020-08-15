@@ -1,4 +1,3 @@
-  
 import { Component, OnInit, Input, OnChanges, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
 import { WySliderStyle } from './wy-slider-types';
 
@@ -6,18 +5,15 @@ import { WySliderStyle } from './wy-slider-types';
   selector: 'app-wy-slider-track',
   template: `<div class="wy-slider-track" [class.buffer]="wyBuffer" [ngStyle]="style"></div>`,
   changeDetection: ChangeDetectionStrategy.OnPush
-
 })
-  
-export class WySliderTrackComponent implements OnInit {
+export class WySliderTrackComponent implements OnInit, OnChanges {
   @Input() wyVertical = false;
   @Input() wyLength: number;
-  @Input() wyBuffer: false;
+  @Input() wyBuffer = false;
   style: WySliderStyle = {};
-
   constructor() { }
 
-  ngOnInit(): void {
+  ngOnInit() {
   }
 
   ngOnChanges(changes: SimpleChanges): void {

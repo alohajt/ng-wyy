@@ -17,10 +17,10 @@ export class SongService {
   getSongUrl(ids: string): Observable<SongUrl[]> {
     const params = new HttpParams().set('id', ids);
     return this.http.get(this.uri + 'song/url', { params })
-      .pipe(map((res: { data: SongUrl[] }) => res.data));
+    .pipe(map((res: { data: SongUrl[] }) => res.data));
   }
 
-
+  
   getSongList(songs: Song | Song[]): Observable<Song[]> {
     const songArr = Array.isArray(songs) ? songs.slice() : [songs];
     const ids = songArr.map(item => item.id).join(',');
